@@ -1,2 +1,5 @@
 # ActionQuery-src
-Simple library enabling simple scripts to command host objects in your code. The scripts are simple programs calling your methods as if they are instructions.
+
+    Note: This repository contains only the source code of the library. It is intended to be mounted as a submodule in other repositories that contain projects using it. For documentation and examples see the ActionQuery repository.
+
+
