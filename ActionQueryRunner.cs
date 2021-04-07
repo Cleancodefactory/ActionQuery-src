@@ -3,7 +3,7 @@ using System.Text;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Ccf.Ck.SysPlugins.Support.ActionQuery
+namespace Ccf.Ck.Libs.ActionQuery
 {
     public class ActionQueryRunner<ResolverValue> where ResolverValue: new() {
         

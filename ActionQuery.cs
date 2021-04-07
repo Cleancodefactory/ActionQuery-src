@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Text.RegularExpressions;
 
-namespace Ccf.Ck.SysPlugins.Support.ActionQuery
+namespace Ccf.Ck.Libs.ActionQuery
 {
     public class ActionQuery<ResolverValue> where ResolverValue: new() {
 

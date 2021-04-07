@@ -1,4 +1,4 @@
-namespace Ccf.Ck.SysPlugins.Support.ActionQuery {
+namespace Ccf.Ck.Libs.ActionQuery {
     public interface IActionQueryHost<ResolverValue> where ResolverValue: new() {
         /// <summary>
         /// Must return null encoded as the parameter type

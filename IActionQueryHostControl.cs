@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Ccf.Ck.SysPlugins.Support.ActionQuery {
+namespace Ccf.Ck.Libs.ActionQuery {
     public interface IActionQueryHostControl<ResolverValue> where ResolverValue: new() {
         /// <summary>
         /// When true calling Execute will cause Step to be called on each instruction.

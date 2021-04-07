@@ -1,4 +1,4 @@
-namespace Ccf.Ck.SysPlugins.Support.ActionQuery {
+namespace Ccf.Ck.Libs.ActionQuery {
     public struct Instruction {
         public Instruction(Instructions operation, object operand = null, int argcount = 0) {
             Operation = operation;

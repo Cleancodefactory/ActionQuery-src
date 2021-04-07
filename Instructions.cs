@@ -1,4 +1,4 @@
-namespace Ccf.Ck.SysPlugins.Support.ActionQuery {
+namespace Ccf.Ck.Libs.ActionQuery {
     /// <summary>
     /// This is public to facilitate diagnostics
     /// </summary>
