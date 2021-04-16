@@ -74,14 +74,18 @@ namespace Ccf.Ck.Libs.ActionQuery
         private int ParsePos(Match m) {
             return m.Index;
         }
-        private string ReportError(string fmt,Match m = null) {
+        private string ReportError(string fmt,Match m, string source) {
+            
             if (m != null) {
-                return string.Format(fmt,ParsePos(m));
+                return ReportError(fmt, ParsePos(m),source);
             } 
             return fmt;
         }
-        private string ReportError(string fmt,int m = -1) {
-            if (m >= 0) {
+        private string ReportError(string fmt,int m, string source) {
+            if (m >= 0 && m < source.Length) {
+                if (source != null) {
+                    return $"{string.Format(fmt,m)} source with the error marked follows:\n{source.Insert(m, "[***ERROR***]")}";    
+                }
                 return string.Format(fmt,m);
             } 
             return fmt;
@@ -106,7 +110,7 @@ namespace Ccf.Ck.Libs.ActionQuery
 
             Match match = _regex.Match(query);
             while(match.Success) {
-                if (pos != match.Index) return runner.Complete(ReportError("Syntax error at {0} - unrecognized text",match.Index));
+                if (pos != match.Index) return runner.Complete(ReportError("Syntax error at {0} - unrecognized text",match.Index, query));
                 pos = match.Index + match.Length;
                 if (match.Groups[0].Success) {
                     for (int i = 1; i < match.Groups.Count; i++) {
@@ -115,13 +119,13 @@ namespace Ccf.Ck.Libs.ActionQuery
                             switch ((Terms)i) {
                                 case Terms.keyword:
                                     if (!undecided.IsEmpty) {
-                                        return runner.Complete(ReportError("Syntax error at {0}.", match));
+                                        return runner.Complete(ReportError("Syntax error at {0}.", match, query));
                                     }
                                     undecided = new OpEntry(curval, Terms.keyword, match.Index);
                                 goto nextTerm;
                                 case Terms.identifier:
                                     if (!undecided.IsEmpty) {
-                                        return runner.Complete(ReportError("Syntax error at {0}.", match));
+                                        return runner.Complete(ReportError("Syntax error at {0}.", match, query));
                                     }
                                     undecided = new OpEntry(curval,Terms.identifier,match.Index);
                                 goto nextTerm;
@@ -146,7 +150,7 @@ namespace Ccf.Ck.Libs.ActionQuery
                                         
                                     }
                                     // *** Function call
-                                    if (opstack.Count == 0) return runner.Complete(ReportError("Syntax error - function call has no function name at {0}",match));
+                                    if (opstack.Count == 0) return runner.Complete(ReportError("Syntax error - function call has no function name at {0}",match, query));
                                     entry = opstack.Pop();
                                     if (entry.Term == Terms.identifier) {
                                         AddArg(opstack, runner);
@@ -166,7 +170,7 @@ namespace Ccf.Ck.Libs.ActionQuery
                                                 // Update else unconditional jump
                                                 runner.Update(entry.Op2Address, runner.Address);
                                             } else {
-                                                return runner.Complete(ReportError("if must have 2 or 3 arguments at {0}", match));
+                                                return runner.Complete(ReportError("if must have 2 or 3 arguments at {0}", match,query));
                                             }
                                         } else if (entry.Value == "while") {
                                             if (entry.Arguments == 2) {
@@ -175,15 +179,15 @@ namespace Ccf.Ck.Libs.ActionQuery
                                                 runner.Update(entry.Op1Address, runner.Address); // Update initial JumpIfNot to go after the end
                                                 runner.Add(new Instruction(Instructions.PushNull)); // Push something to keep the illusion that something is returned.
                                             } else {
-                                                return runner.Complete(ReportError("while must have 2 arguments at {0}", match));
+                                                return runner.Complete(ReportError("while must have 2 arguments at {0}", match, query));
                                             }
                                         } else {
-                                            return runner.Complete(ReportError("Unexpected end of control operator at {0}", match));
+                                            return runner.Complete(ReportError("Unexpected end of control operator at {0}", match, query));
                                         }
                                     } else if (entry.Term == Terms.compound) {
                                         AddArg(opstack, runner);
                                     } else {
-                                        return runner.Complete(ReportError("Syntax error - function call has no function name at {0}",match));
+                                        return runner.Complete(ReportError("Syntax error - function call has no function name at {0}",match, query));
                                     }
                                     level --;
                                 goto nextTerm;
@@ -194,7 +198,7 @@ namespace Ccf.Ck.Libs.ActionQuery
                                         undecided = OpEntry.Empty;
                                         
                                     } else if (!undecided.IsEmpty) { // If this happend it will be our mistake. Nothing but identifiers should appear in the undecided
-                                        return runner.Complete(ReportError("Syntax error at {0}",undecided.Pos));
+                                        return runner.Complete(ReportError("Syntax error at {0}",undecided.Pos,query));
                                     }
                                     // TODO: Consider root level behavior! Multiple results may be useful?
                                     if (opstack.Count == 0 || opstack.Peek().Term == Terms.compound) {
@@ -217,37 +221,37 @@ namespace Ccf.Ck.Libs.ActionQuery
                                                     // Jump here if condition is not met
                                                     runner.Update(entry.Op1Address, runner.Address);
                                                 } else if (entry.Value == "while") {
-                                                    return runner.Complete(ReportError("while has more than two arguments at {0}", match));
+                                                    return runner.Complete(ReportError("while has more than two arguments at {0}", match,query));
                                                 } else {
                                                     // This is completely unexpected
-                                                    return runner.Complete(ReportError("syntax error at {0}", match));
+                                                    return runner.Complete(ReportError("syntax error at {0}", match,query));
                                                 }
                                             } else {
-                                                return runner.Complete(ReportError("while or if operator cannot be composed correctly {0}",undecided.Pos));
+                                                return runner.Complete(ReportError("while or if operator cannot be composed correctly {0}",undecided.Pos,query));
                                             }
                                         }
                                     }
                                 goto nextTerm;
                                 case Terms.numliteral:
-                                    if (!undecided.IsEmpty) return runner.Complete(ReportError("Syntax error at {0}",undecided.Pos));
+                                    if (!undecided.IsEmpty) return runner.Complete(ReportError("Syntax error at {0}",undecided.Pos, query));
                                     if (curval.IndexOf('.') >= 0) { // double
                                         if (double.TryParse(curval,NumberStyles.Any,CultureInfo.InvariantCulture, out double t)) {
                                             runner.Add(new Instruction(Instructions.PushDouble, t));
                                             AddArg(opstack, runner);
                                         } else {
-                                            return runner.Complete(ReportError("Invalid double number at {0}",match));
+                                            return runner.Complete(ReportError("Invalid double number at {0}",match,query));
                                         }
                                     } else {
                                         if (int.TryParse(curval,NumberStyles.Any,CultureInfo.InvariantCulture, out int n)) {
                                             runner.Add(new Instruction(Instructions.PushInt,n));
                                             AddArg(opstack, runner);
                                         } else {
-                                            return runner.Complete(ReportError("Invalid integer number at {0}",match));
+                                            return runner.Complete(ReportError("Invalid integer number at {0}",match,query));
                                         }
                                     }
                                 goto nextTerm;
                                 case Terms.specialliteral:
-                                    if (!undecided.IsEmpty) return runner.Complete(ReportError("Syntax error at {0}",undecided.Pos));
+                                    if (!undecided.IsEmpty) return runner.Complete(ReportError("Syntax error at {0}",undecided.Pos,query));
                                     if (curval == "null") {
                                         runner.Add(new Instruction(Instructions.PushNull));
                                     } else if (curval == "true") {
@@ -255,13 +259,13 @@ namespace Ccf.Ck.Libs.ActionQuery
                                     } else if (curval == "false") {
                                         runner.Add(new Instruction(Instructions.PushBool,false));
                                     } else {
-                                        return runner.Complete(ReportError("Syntax error at {0}",match));
+                                        return runner.Complete(ReportError("Syntax error at {0}",match,query));
                                     }
                                     AddArg(opstack, runner);
                                 goto nextTerm;
                                 case Terms.stringliteral:
                                     if (!undecided.IsEmpty) {
-                                        return runner.Complete(ReportError("Syntax error at {0}", undecided.Pos));
+                                        return runner.Complete(ReportError("Syntax error at {0}", undecided.Pos,query));
                                     }
                                     runner.Add(new Instruction(Instructions.PushString,curval));
                                     AddArg(opstack, runner);
@@ -283,7 +287,7 @@ namespace Ccf.Ck.Libs.ActionQuery
                                     }
                                 // break;
                                 default:
-                                    return runner.Complete(ReportError("Syntax error at {0}",match));
+                                    return runner.Complete(ReportError("Syntax error at {0}",match, query));
                                 
                             }
                         } // catch actual group

@@ -77,7 +77,7 @@ namespace Ccf.Ck.Libs.ActionQuery
                         _args[i] = _datastack.Pop();
                     }
                     if (tracer != null) {
-                        if (!tracer.Step(pc, instr, _args, _datastack)) {
+                        if (!tracer.Step(pc, instr, _args.Take(instr.ArgumentsCount).ToArray(), _datastack)) {
                             return null;
                         }
                     }

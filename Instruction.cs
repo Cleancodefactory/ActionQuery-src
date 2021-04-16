@@ -14,5 +14,10 @@ namespace Ccf.Ck.Libs.ActionQuery {
                 return new Instruction(Instructions.NoOp, null,0);
             }
         }
+
+        public override string ToString()
+        {
+            return $"{Operation.ToString()} [{Operand}] ({ArgumentsCount})";
+        }
     }
 }
