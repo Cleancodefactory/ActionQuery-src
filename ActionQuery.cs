@@ -156,8 +156,12 @@ namespace Ccf.Ck.Libs.ActionQuery
                                         // TODO: Operator completion
                                         if (entry.Value == "if") {
                                             if (entry.Arguments == 2) {
+                                                runner.Add(new Instruction(Instructions.Jump, runner.Address + 2));
+                                                
                                                 // Update initial jumpIfNot
                                                 runner.Update(entry.Op1Address, runner.Address);
+                                                // Add dummy else
+                                                runner.Add(new Instruction(Instructions.PushNull));
                                             } else if (entry.Arguments == 3) {
                                                 // Update else unconditional jump
                                                 runner.Update(entry.Op2Address, runner.Address);
@@ -166,8 +170,10 @@ namespace Ccf.Ck.Libs.ActionQuery
                                             }
                                         } else if (entry.Value == "while") {
                                             if (entry.Arguments == 2) {
-                                                runner.Add(new Instruction(Instructions.Jump, entry.Op0Address));
-                                                runner.Update(entry.Op1Address, runner.Address);
+                                                runner.Add(new Instruction(Instructions.Dump,null, 1))
+                                                runner.Add(new Instruction(Instructions.Jump, entry.Op0Address)); // Jump to the initial condition
+                                                runner.Update(entry.Op1Address, runner.Address); // Update initial JumpIfNot to go after the end
+                                                runner.Add(new Instruction(Instructions.PushNull)); // Push something to keep the illusion that something is returned.
                                             } else {
                                                 return runner.Complete(ReportError("while must have 2 arguments at {0}", match));
                                             }
@@ -188,7 +194,7 @@ namespace Ccf.Ck.Libs.ActionQuery
                                         undecided = OpEntry.Empty;
                                         
                                     } else if (!undecided.IsEmpty) { // If this happend it will be our mistake. Nothing but identifiers should appear in the undecided
-                                        return runner.Complete(ReportError("Internal error at {0}",undecided.Pos));
+                                        return runner.Complete(ReportError("Syntax error at {0}",undecided.Pos));
                                     }
                                     // TODO: Consider root level behavior! Multiple results may be useful?
                                     if (opstack.Count == 0 || opstack.Peek().Term == Terms.compound) {
