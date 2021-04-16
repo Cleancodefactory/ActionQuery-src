@@ -5,7 +5,7 @@ namespace Ccf.Ck.Libs.ActionQuery {
         /// <summary>
         /// When true calling Execute will cause Step to be called on each instruction.
         /// </summary>
-        bool StartTrace(Instruction[] program);
+        bool StartTrace(IEnumerable<Instruction> program);
         /// <summary>
         /// In trace mode this is called on each instruction
         /// </summary>

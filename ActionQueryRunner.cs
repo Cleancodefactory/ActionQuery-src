@@ -41,8 +41,9 @@ namespace Ccf.Ck.Libs.ActionQuery
         #endregion
 
 
-        public ResolverValue[] Execute(IActionQueryHost<ResolverValue> host) {
+        public ResolverValue[] Execute(IActionQueryHost<ResolverValue> host, int hardlimit = -1) {
             int pc = 0, i;
+            int _hardlimit = hardlimit;
             Stack<ResolverValue> _datastack = new Stack<ResolverValue>();
             //List<ResolverValue> _args = new List<ResolverValue>();
             ResolverValue[] _args = new ResolverValue[16];
@@ -54,7 +55,7 @@ namespace Ccf.Ck.Libs.ActionQuery
             }
             IActionQueryHostControl<ResolverValue> tracer = null;
             if (host is IActionQueryHostControl<ResolverValue> tr) {
-                if (tr.StartTrace()) {
+                if (tr.StartTrace(_program)) {
                     tracer = tr;
                 }
             }
@@ -62,6 +63,11 @@ namespace Ccf.Ck.Libs.ActionQuery
             try {
                 while (pc < _program.Length) {
                     instr = _program[pc];
+                    if (_hardlimit == 0) throw new AuctionQueryException<ResolverValue>($"Hard limit {hardlimit} has been reached and the program has been stopped.", instr, _datastack.ToArray(), pc);
+                    if (_hardlimit > 0) {
+                        _hardlimit--;
+                    }
+                    
                     if (_datastack.Count < instr.ArgumentsCount) {
                         throw new AuctionQueryException<ResolverValue>("Stack underflow", instr, _datastack.ToArray(), pc);
                     } else if (instr.ArgumentsCount > 16) {
@@ -185,8 +191,8 @@ namespace Ccf.Ck.Libs.ActionQuery
                 throw new AuctionQueryException<ResolverValue>("Exception in the ActionQuery's host.", instr, _datastack.ToArray(),pc, ex);
             }
         }
-        public ResolverValue ExecuteScalar(IActionQueryHost<ResolverValue> host) {
-            var r = Execute(host);
+        public ResolverValue ExecuteScalar(IActionQueryHost<ResolverValue> host, int _hardlimit = -1) {
+            var r = Execute(host, _hardlimit);
             if (r != null) {
                 return r[r.Length - 1];
             } else {

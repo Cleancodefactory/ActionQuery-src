@@ -170,7 +170,7 @@ namespace Ccf.Ck.Libs.ActionQuery
                                             }
                                         } else if (entry.Value == "while") {
                                             if (entry.Arguments == 2) {
-                                                runner.Add(new Instruction(Instructions.Dump,null, 1))
+                                                runner.Add(new Instruction(Instructions.Dump,null, 1));
                                                 runner.Add(new Instruction(Instructions.Jump, entry.Op0Address)); // Jump to the initial condition
                                                 runner.Update(entry.Op1Address, runner.Address); // Update initial JumpIfNot to go after the end
                                                 runner.Add(new Instruction(Instructions.PushNull)); // Push something to keep the illusion that something is returned.
