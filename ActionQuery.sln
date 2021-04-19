@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31205.134
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ccf.Ck.Libs.ActionQuery", "Ccf.Ck.Libs.ActionQuery.csproj", "{1D59D8CF-1A16-4FEA-90EA-2D3C1D7C08B2}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1D59D8CF-1A16-4FEA-90EA-2D3C1D7C08B2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1D59D8CF-1A16-4FEA-90EA-2D3C1D7C08B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1D59D8CF-1A16-4FEA-90EA-2D3C1D7C08B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1D59D8CF-1A16-4FEA-90EA-2D3C1D7C08B2}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {ADCA3E42-60D4-4564-A556-FDF1FBC74BE4}
+	EndGlobalSection
+EndGlobal
