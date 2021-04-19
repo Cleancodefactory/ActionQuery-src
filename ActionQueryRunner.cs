@@ -51,7 +51,7 @@ namespace Ccf.Ck.Libs.ActionQuery
             Instruction instr = Instruction.Empty;
             
             if (host == null) {
-                throw new AuctionQueryException<ResolverValue>("No host given to Execute", Instruction.Empty, null, 0);
+                throw new ActionQueryException<ResolverValue>("No host given to Execute", Instruction.Empty, null, 0);
             }
             IActionQueryHostControl<ResolverValue> tracer = null;
             if (host is IActionQueryHostControl<ResolverValue> tr) {
@@ -63,15 +63,15 @@ namespace Ccf.Ck.Libs.ActionQuery
             try {
                 while (pc < _program.Length) {
                     instr = _program[pc];
-                    if (_hardlimit == 0) throw new AuctionQueryException<ResolverValue>($"Hard limit {hardlimit} has been reached and the program has been stopped.", instr, _datastack.ToArray(), pc);
+                    if (_hardlimit == 0) throw new ActionQueryException<ResolverValue>($"Hard limit {hardlimit} has been reached and the program has been stopped.", instr, _datastack.ToArray(), pc);
                     if (_hardlimit > 0) {
                         _hardlimit--;
                     }
                     
                     if (_datastack.Count < instr.ArgumentsCount) {
-                        throw new AuctionQueryException<ResolverValue>("Stack underflow", instr, _datastack.ToArray(), pc);
+                        throw new ActionQueryException<ResolverValue>("Stack underflow", instr, _datastack.ToArray(), pc);
                     } else if (instr.ArgumentsCount > 16) {
-                        throw new AuctionQueryException<ResolverValue>("Too many arguments, up to 16 are supported.", instr, _datastack.ToArray(), pc);
+                        throw new ActionQueryException<ResolverValue>("Too many arguments, up to 16 are supported.", instr, _datastack.ToArray(), pc);
                     }
                     for (i = instr.ArgumentsCount - 1; i >= 0;i--) {
                         _args[i] = _datastack.Pop();
@@ -88,7 +88,7 @@ namespace Ccf.Ck.Libs.ActionQuery
                                 val = host.CallProc(s, _args.Take(instr.ArgumentsCount).ToArray());
                                 _datastack.Push(val);
                             } else {
-                                throw new AuctionQueryException<ResolverValue>("Call requires string operand.", instr, _datastack.ToArray(),pc);    
+                                throw new ActionQueryException<ResolverValue>("Call requires string operand.", instr, _datastack.ToArray(),pc);    
                             }
                             pc++;
                             continue;
@@ -98,10 +98,10 @@ namespace Ccf.Ck.Libs.ActionQuery
                                     pc = x;
                                     continue;
                                 } else {
-                                    throw new AuctionQueryException<ResolverValue>("Jump out of boundaries.", instr, _datastack.ToArray(),pc);    
+                                    throw new ActionQueryException<ResolverValue>("Jump out of boundaries.", instr, _datastack.ToArray(),pc);    
                                 }
                             } else {
-                                throw new AuctionQueryException<ResolverValue>("Jump has invalid operand.", instr, _datastack.ToArray(),pc);
+                                throw new ActionQueryException<ResolverValue>("Jump has invalid operand.", instr, _datastack.ToArray(),pc);
                             }
                         case Instructions.JumpIfNot:
                             if (instr.Operand is int y) {
@@ -116,13 +116,13 @@ namespace Ccf.Ck.Libs.ActionQuery
                                             continue;
                                         }
                                     } else {
-                                        throw new AuctionQueryException<ResolverValue>("Not enough arguments for JumpIfNot.", instr, _datastack.ToArray(),pc);        
+                                        throw new ActionQueryException<ResolverValue>("Not enough arguments for JumpIfNot.", instr, _datastack.ToArray(),pc);        
                                     }
                                 } else {
-                                    throw new AuctionQueryException<ResolverValue>("Jump out of boundaries.", instr, _datastack.ToArray(),pc);    
+                                    throw new ActionQueryException<ResolverValue>("Jump out of boundaries.", instr, _datastack.ToArray(),pc);    
                                 }
                             } else {
-                                throw new AuctionQueryException<ResolverValue>("Jump has invalid operand.", instr, _datastack.ToArray(),pc);
+                                throw new ActionQueryException<ResolverValue>("Jump has invalid operand.", instr, _datastack.ToArray(),pc);
                             }
                         case Instructions.NoOp:
                             pc++;
@@ -133,7 +133,7 @@ namespace Ccf.Ck.Libs.ActionQuery
                                 pc++;
                                 continue;
                             } else {
-                                throw new AuctionQueryException<ResolverValue>("Invalid operand type.", instr, _datastack.ToArray(),pc);
+                                throw new ActionQueryException<ResolverValue>("Invalid operand type.", instr, _datastack.ToArray(),pc);
                             }
                         case Instructions.PushDouble:
                             if (instr.Operand is double) {
@@ -141,7 +141,7 @@ namespace Ccf.Ck.Libs.ActionQuery
                                 pc++;
                                 continue;
                             } else {
-                                throw new AuctionQueryException<ResolverValue>("Invalid operand type.", instr, _datastack.ToArray(),pc);
+                                throw new ActionQueryException<ResolverValue>("Invalid operand type.", instr, _datastack.ToArray(),pc);
                             }
                         case Instructions.PushInt:
                             if (instr.Operand is int) {
@@ -149,7 +149,7 @@ namespace Ccf.Ck.Libs.ActionQuery
                                 pc++;
                                 continue;
                             } else {
-                                throw new AuctionQueryException<ResolverValue>("Invalid operand type.", instr, _datastack.ToArray(),pc);
+                                throw new ActionQueryException<ResolverValue>("Invalid operand type.", instr, _datastack.ToArray(),pc);
                             }
                         case Instructions.PushNull:
                             pc++;
@@ -162,7 +162,7 @@ namespace Ccf.Ck.Libs.ActionQuery
                                 _datastack.Push(val);
                                 continue;
                             } else {
-                                throw new AuctionQueryException<ResolverValue>("Invalid operand type.", instr, _datastack.ToArray(),pc);
+                                throw new ActionQueryException<ResolverValue>("Invalid operand type.", instr, _datastack.ToArray(),pc);
                             }
                         case Instructions.PushString:
                             if (instr.Operand is string) {
@@ -170,13 +170,13 @@ namespace Ccf.Ck.Libs.ActionQuery
                                 _datastack.Push(host.FromString((string)instr.Operand));
                                 continue;
                             } else {
-                                throw new AuctionQueryException<ResolverValue>("Invalid operand type.", instr, _datastack.ToArray(),pc);
+                                throw new ActionQueryException<ResolverValue>("Invalid operand type.", instr, _datastack.ToArray(),pc);
                             }
                         case Instructions.Dump:
                             pc++;
                             continue;
                         default:
-                            throw new AuctionQueryException<ResolverValue>("Unsupported instruction.", instr, _datastack.ToArray(),pc);
+                            throw new ActionQueryException<ResolverValue>("Unsupported instruction.", instr, _datastack.ToArray(),pc);
                     }
                 }
                 // Execution finished
@@ -185,10 +185,10 @@ namespace Ccf.Ck.Libs.ActionQuery
                 } else {
                     return null;
                 }
-            } catch (AuctionQueryException<ResolverValue> ex) {
+            } catch (ActionQueryException<ResolverValue> ex) {
                 throw ex;
             } catch (Exception ex) {
-                throw new AuctionQueryException<ResolverValue>("Exception in the ActionQuery's host.", instr, _datastack.ToArray(),pc, ex);
+                throw new ActionQueryException<ResolverValue>("Exception in the ActionQuery's host.", instr, _datastack.ToArray(),pc, ex);
             }
         }
         public ResolverValue ExecuteScalar(IActionQueryHost<ResolverValue> host, int _hardlimit = -1) {
