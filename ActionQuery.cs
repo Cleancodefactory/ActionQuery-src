@@ -220,6 +220,7 @@ namespace Ccf.Ck.Libs.ActionQuery
                                                     runner.Add(new Instruction(Instructions.Jump, -1));
                                                     // Jump here if condition is not met
                                                     runner.Update(entry.Op1Address, runner.Address);
+                                                    AddArg(opstack, runner);
                                                 } else if (entry.Value == "while") {
                                                     return runner.Complete(ReportError("while has more than two arguments at {0}", match,query));
                                                 } else {
