@@ -18,23 +18,24 @@ namespace Ccf.Ck.Libs.ActionQuery
             keyword = 3,
             // identifier - function name or parameter name to fetch (the actual fetching depends on the usage)
             // Addresses 0 - just found, 1 - end of first arg, last - 1 - last arg, last - after final element
-            identifier = 4,
+            varidentifier = 4,
+            identifier = 5,
             // Open normal bracket (function call arguments, grouping is not supported intentionally - see the docs for more details)
-            openbracket = 5,
+            openbracket = 6,
             // close normal bracket - end of function call argument list.
-            closebracket = 6,
+            closebracket = 7,
             // string literal 'something'
-            stringliteral = 7,
+            stringliteral = 8,
             // numeric literal like: 124, +234, -324, 123.45, -2.43, +0.23423 etc.
-            numliteral = 8,
+            numliteral = 9,
             // comma separator of arguments. can be used at top level also, in this case this will produce multiple results (usable only with the corresponding evaluation routines)
-            comma = 9,
+            comma = 10,
             // end of the expression
-            end = 10,
+            end = 11,
             // Virtual tokens ===
             compound = 101
         }
-        private static readonly Regex _regex = new Regex(@"(\s+)|(true|false|null)|(while|if)|([a-zA-Z_][a-zA-Z0-9_\.\-]*)|(\()|(\))|(?:\'((?:\\'|[^\'])*)\')|([\+\-]?\d+(?:\.\d*)?)|(\,|(?:\r|\n)+)|($)",
+        private static readonly Regex _regex = new Regex(@"(\s+)|(true|false|null)|(while|if)|(?:$([a-zA-Z0-9_\.\-]*))|([a-zA-Z_][a-zA-Z0-9_\.\-]*)|(\()|(\))|(?:\'((?:\\'|[^\'])*)\')|([\+\-]?\d+(?:\.\d*)?)|(\,|(?:\r|\n)+)|($)",
             RegexOptions.None);
 
 
@@ -123,6 +124,12 @@ namespace Ccf.Ck.Libs.ActionQuery
                                     }
                                     undecided = new OpEntry(curval, Terms.keyword, match.Index);
                                 goto nextTerm;
+                                case Terms.varidentifier:
+                                    if (!undecided.IsEmpty) {
+                                        return runner.Complete(ReportError("Syntax error at {0}.", match, query));
+                                    }
+                                    undecided = new OpEntry(curval,Terms.varidentifier,match.Index);
+                                goto nextTerm;
                                 case Terms.identifier:
                                     if (!undecided.IsEmpty) {
                                         return runner.Complete(ReportError("Syntax error at {0}.", match, query));
@@ -130,7 +137,10 @@ namespace Ccf.Ck.Libs.ActionQuery
                                     undecided = new OpEntry(curval,Terms.identifier,match.Index);
                                 goto nextTerm;
                                 case Terms.openbracket:
-                                    if (undecided.Term == Terms.identifier) {
+                                    if (undecided.Term == Terms.varidentifier) {
+                                        opstack.Push(undecided); // Var set
+                                        undecided = OpEntry.Empty;
+                                    } else if (undecided.Term == Terms.identifier) {
                                         opstack.Push(undecided); // Function call
                                         undecided = OpEntry.Empty;
                                     } else if (undecided.Term == Terms.keyword) {
@@ -143,7 +153,11 @@ namespace Ccf.Ck.Libs.ActionQuery
                                     level ++;
                                 goto nextTerm;
                                 case Terms.closebracket:
-                                    if (undecided.Term == Terms.identifier) {
+                                    if (undecided.Term == Terms.varidentifier) {
+                                        AddArg(opstack, runner);
+                                        runner.Add(new Instruction(Instructions.GetVar,undecided.Value)); // GetVar varidentifier
+                                        undecided = OpEntry.Empty;
+                                    } else if (undecided.Term == Terms.identifier) {
                                         AddArg(opstack, runner);
                                         runner.Add(new Instruction(Instructions.PushParam,undecided.Value));
                                         undecided = OpEntry.Empty;
@@ -152,8 +166,13 @@ namespace Ccf.Ck.Libs.ActionQuery
                                     // *** Function call
                                     if (opstack.Count == 0) return runner.Complete(ReportError("Syntax error - function call has no function name at {0}",match, query));
                                     entry = opstack.Pop();
-                                    if (entry.Term == Terms.identifier) {
+                                    if (entry.Term == Terms.varidentifier) {
                                         AddArg(opstack, runner);
+                                        // TODO - what about empty argument list? (BUG)
+                                        runner.Add(new Instruction(Instructions.SetVar, entry.Value,entry.Arguments));
+                                    } else if (entry.Term == Terms.identifier) {
+                                        AddArg(opstack, runner);
+                                        // TODO - what about empty argument list? (BUG)
                                         runner.Add(new Instruction(Instructions.Call, entry.Value,entry.Arguments));
                                     } else if (entry.Term == Terms.keyword) {
                                         AddArg(opstack, runner);

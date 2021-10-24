@@ -14,7 +14,12 @@ namespace Ccf.Ck.Libs.ActionQuery {
         PushString = 7, // (string) - pushes a string on the stack
         Dump = 8, // () - Pulls and dumps (forgets) one entry from the stack
         JumpIfNot = 9, // (jumpaddress), 1 arg
-        Jump = 10 // (jumpaddress), 0 arg
+        Jump = 10, // (jumpaddress), 0 arg
+
+        #region 1.1
+        GetVar = 11, // $varname - acquires variable by varname from the host and puts its value on the stack
+        SetVar = 12 // $varname(expression) - sets the variable varname in the host
+        #endregion 1.1
 
     }
 }
