@@ -59,5 +59,19 @@ namespace Ccf.Ck.Libs.ActionQuery {
         /// <returns></returns>
         ResolverValue CallProc(string method, ResolverValue[] args);
 
+        /// <summary>
+        /// Has to return the value of the variable with the given name
+        /// </summary>
+        /// <param name="varname"></param>
+        /// <returns></returns>
+        ResolverValue GetVar(string varname);
+        /// <summary>
+        /// Sets the variable and also returns the value being set.
+        /// </summary>
+        /// <param name="varname">The name of the variable</param>
+        /// <param name="value">The value to set</param>
+        /// <returns></returns>
+        ResolverValue SetVar(string varname, ResolverValue value);
+
     }
 }

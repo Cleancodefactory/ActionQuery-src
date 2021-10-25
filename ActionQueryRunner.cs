@@ -164,6 +164,26 @@ namespace Ccf.Ck.Libs.ActionQuery
                             } else {
                                 throw new ActionQueryException<ResolverValue>("Invalid operand type.", instr, _datastack.ToArray(),pc);
                             }
+                        case Instructions.PushVar: 
+                            if (instr.Operand is string varname) {
+                                pc++;
+                                val = host.GetVar(varname);
+                                _datastack.Push(val);
+                                continue;
+                            } else {
+                                throw new ActionQueryException<ResolverValue>("Invalid operand type.", instr, _datastack.ToArray(),pc);
+                            }
+                        case Instructions.PullVar:
+                            if (instr.Operand is string pullvarname) {
+                                pc++;
+                                if (instr.ArgumentsCount > 1) throw new ActionQueryException<ResolverValue>("Too many arguments.", instr, _datastack.ToArray(),pc);
+                                if (instr.ArgumentsCount < 1) throw new ActionQueryException<ResolverValue>("Not enough arguments.", instr, _datastack.ToArray(),pc);
+                                val = host.SetVar(pullvarname, _args.FirstOrDefault());
+                                _datastack.Push(val);
+                                continue;
+                            } else {
+                                throw new ActionQueryException<ResolverValue>("Invalid operand type.", instr, _datastack.ToArray(),pc);
+                            }
                         case Instructions.PushString:
                             if (instr.Operand is string) {
                                 pc++;

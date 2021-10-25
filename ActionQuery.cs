@@ -35,7 +35,7 @@ namespace Ccf.Ck.Libs.ActionQuery
             // Virtual tokens ===
             compound = 101
         }
-        private static readonly Regex _regex = new Regex(@"(\s+)|(true|false|null)|(while|if)|(?:$([a-zA-Z0-9_\.\-]*))|([a-zA-Z_][a-zA-Z0-9_\.\-]*)|(\()|(\))|(?:\'((?:\\'|[^\'])*)\')|([\+\-]?\d+(?:\.\d*)?)|(\,|(?:\r|\n)+)|($)",
+        private static readonly Regex _regex = new Regex(@"(\s+)|(true|false|null)|(while|if)|(?:\$([a-zA-Z0-9_\.\-]+))|([a-zA-Z_][a-zA-Z0-9_\.\-]*)|(\()|(\))|(?:\'((?:\\'|[^\'])*)\')|([\+\-]?\d+(?:\.\d*)?)|(\,|(?:\r|\n)+)|($)",
             RegexOptions.None);
 
 
@@ -155,7 +155,7 @@ namespace Ccf.Ck.Libs.ActionQuery
                                 case Terms.closebracket:
                                     if (undecided.Term == Terms.varidentifier) {
                                         AddArg(opstack, runner);
-                                        runner.Add(new Instruction(Instructions.GetVar,undecided.Value)); // GetVar varidentifier
+                                        runner.Add(new Instruction(Instructions.PushVar,undecided.Value)); // GetVar varidentifier
                                         undecided = OpEntry.Empty;
                                     } else if (undecided.Term == Terms.identifier) {
                                         AddArg(opstack, runner);
@@ -169,7 +169,7 @@ namespace Ccf.Ck.Libs.ActionQuery
                                     if (entry.Term == Terms.varidentifier) {
                                         AddArg(opstack, runner);
                                         // TODO - what about empty argument list? (BUG)
-                                        runner.Add(new Instruction(Instructions.SetVar, entry.Value,entry.Arguments));
+                                        runner.Add(new Instruction(Instructions.PullVar, entry.Value,entry.Arguments));
                                     } else if (entry.Term == Terms.identifier) {
                                         AddArg(opstack, runner);
                                         // TODO - what about empty argument list? (BUG)
@@ -211,7 +211,11 @@ namespace Ccf.Ck.Libs.ActionQuery
                                     level --;
                                 goto nextTerm;
                                 case Terms.comma:
-                                    if (undecided.Term == Terms.identifier) {
+                                    if (undecided.Term == Terms.varidentifier) {
+                                        AddArg(opstack, runner);
+                                        runner.Add(new Instruction(Instructions.PushVar, undecided.Value));
+                                        undecided = OpEntry.Empty;
+                                    } else if (undecided.Term == Terms.identifier) {
                                         AddArg(opstack, runner);
                                         runner.Add(new Instruction(Instructions.PushParam, undecided.Value));
                                         undecided = OpEntry.Empty;
@@ -294,7 +298,11 @@ namespace Ccf.Ck.Libs.ActionQuery
                                     // do nothing - we simply ignore the space
                                 goto nextTerm;
                                 case Terms.end:
-                                    if (undecided.Term == Terms.identifier) {
+                                    if (undecided.Term == Terms.varidentifier) {
+                                        AddArg(opstack, runner);
+                                        runner.Add(new Instruction(Instructions.PushVar, undecided.Value));
+                                        undecided = OpEntry.Empty;
+                                    } else if (undecided.Term == Terms.identifier) {
                                         AddArg(opstack, runner);
                                         runner.Add(new Instruction(Instructions.PushParam, undecided.Value));
                                         undecided = OpEntry.Empty;
