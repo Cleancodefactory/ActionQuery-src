@@ -33,9 +33,10 @@ namespace Ccf.Ck.Libs.ActionQuery
             // end of the expression
             end = 11,
             // Virtual tokens ===
+            comment = 12,
             compound = 101
         }
-        private static readonly Regex _regex = new Regex(@"(\s+)|(true|false|null)|(while|if)|(?:\$([a-zA-Z0-9_\.\-]+))|([a-zA-Z_][a-zA-Z0-9_\.\-]*)|(\()|(\))|(?:\'((?:\\'|[^\'])*)\')|([\+\-]?\d+(?:\.\d*)?)|(\,|(?:\r|\n)+)|($)",
+        private static readonly Regex _regex = new Regex(@"(\s+)|(true|false|null)|(while|if)|(?:\$([a-zA-Z0-9_\.\-]+))|([a-zA-Z_][a-zA-Z0-9_\.\-]*)|(\()|(\))|(?:\'((?:\\'|[^\'])*)\')|([\+\-]?\d+(?:\.\d*)?)|(\,|(?:\r|\n)+)|($)|(#.*?(?:\n|\r)+)",
             RegexOptions.None);
 
 
@@ -295,6 +296,7 @@ namespace Ccf.Ck.Libs.ActionQuery
                                     AddArg(opstack, runner);
                                 goto nextTerm;
                                 case Terms.space:
+                                case Terms.comment:
                                     // do nothing - we simply ignore the space
                                 goto nextTerm;
                                 case Terms.end:

@@ -7,6 +7,12 @@ namespace Ccf.Ck.Libs.ActionQuery
 {
     public class ActionQueryRunner<ResolverValue> where ResolverValue: new() {
         
+        public static int MAX_CALL_ARGUMENTS { get; set; }
+        private static int _MaxArgs { 
+            get { 
+                return MAX_CALL_ARGUMENTS > 0?MAX_CALL_ARGUMENTS:16;
+            }
+        }
         private ActionQueryRunner(Instruction[] program) {
             _program = program;
         }
@@ -46,7 +52,7 @@ namespace Ccf.Ck.Libs.ActionQuery
             int _hardlimit = hardlimit;
             Stack<ResolverValue> _datastack = new Stack<ResolverValue>();
             //List<ResolverValue> _args = new List<ResolverValue>();
-            ResolverValue[] _args = new ResolverValue[16];
+            ResolverValue[] _args = new ResolverValue[_MaxArgs];
             ResolverValue val;
             Instruction instr = Instruction.Empty;
             
@@ -70,8 +76,8 @@ namespace Ccf.Ck.Libs.ActionQuery
                     
                     if (_datastack.Count < instr.ArgumentsCount) {
                         throw new ActionQueryException<ResolverValue>("Stack underflow", instr, _datastack.ToArray(), pc);
-                    } else if (instr.ArgumentsCount > 16) {
-                        throw new ActionQueryException<ResolverValue>("Too many arguments, up to 16 are supported.", instr, _datastack.ToArray(), pc);
+                    } else if (instr.ArgumentsCount > _MaxArgs) {
+                        throw new ActionQueryException<ResolverValue>("Too many arguments, up to _MaxArgs(def:16) are supported.", instr, _datastack.ToArray(), pc);
                     }
                     for (i = instr.ArgumentsCount - 1; i >= 0;i--) {
                         _args[i] = _datastack.Pop();
@@ -208,7 +214,7 @@ namespace Ccf.Ck.Libs.ActionQuery
             } catch (ActionQueryException<ResolverValue> ex) {
                 throw ex;
             } catch (Exception ex) {
-                throw new ActionQueryException<ResolverValue>("Exception in the ActionQuery's host.", instr, _datastack.ToArray(),pc, ex);
+                throw new ActionQueryException<ResolverValue>("Exception in the ActionQuery's host:" + ex.Message, instr, _datastack.ToArray(),pc, ex);
             }
         }
         public ResolverValue ExecuteScalar(IActionQueryHost<ResolverValue> host, int _hardlimit = -1) {
