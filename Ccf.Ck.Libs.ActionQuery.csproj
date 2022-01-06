@@ -9,19 +9,19 @@
   <PropertyGroup>
     <!-- Description and Release notes -->
     <Description>Tiny script language for programmable objects. The language is really minimal, 
-    all you can do with it is to write small programs/queries that call methods exposed to they
+    all you can do with it is to write small programs/queries that call methods exposed to the
     language through a very simple host object. The host makes possible to hide behind it a concept of
     libraries available anywhere and some explicit methods available only in specific contexts. The 
-    language itself consists of syntax for function calls with varying arguments, a few special words, 
+    language itself consists of syntax for function calls with varying number of arguments, a few special words, 
     resolution of outside read only parameters and only two logical constructs - if and while. It does not
-    need learning (15 seconds are enough), thus those who use it need only know what can they call from it
-    in the contexts in which they can use it. The purpose of such an script/query is to give the programmer
+    need much learning (a couple of minutes should be enough), thus those who use it need only know what can they call from it
+    in the contexts in which they can use it. The purpose of such a script/query is to give the programmer
     an option to not hard code the logic of certain classes/plugins, but create them as a set of methods that
     can do the job in various ways if called in different order and supplied with different data. Attaching the
     ActionQuery to such an object makes possible to program them what to do without rebuilding or even at 
-    run-time if the script is reloaded/recompiled. The compilation is a single pass, but the resulting is 
+    run-time if the script is reloaded/recompiled. The compilation is a single pass, but the result is 
     independent of any references and can be preserved in a cache for additional performance benefits if the
-    ActionQuery is heavily used across the project. See the documentation for further details (the documentation
+    the specific ActionQuery is heavily used. See the documentation for further details (the documentation
     is in a separate respository together with examples.)
     </Description>
     <PackageProjectUrl>https://github.com/Cleancodefactory/ActionQuery-src</PackageProjectUrl>
@@ -31,6 +31,7 @@
       Simple library enabling simple scripts to command host objects in your code. The scripts are simple programs calling your methods as if they are instructions.
       - Version 1.0.3: First public version (bugfixing)
       - Version 1.0.4: Correction of the nuget description (no code has been changed)
+	    - Version 1.1.0: Added support for comments and dedicated variable access syntax.
     </PackageReleaseNotes>
     <!-- Description and Release notes -->
   </PropertyGroup>
