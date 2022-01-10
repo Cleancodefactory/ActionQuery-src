@@ -35,8 +35,11 @@ namespace Ccf.Ck.Libs.ActionQuery
             // Virtual tokens ===
             comment = 12,
             compound = 101
+        
         }
-        private static readonly Regex _regex = new Regex(@"(\s+)|(true|false|null)|(while|if)|(?:\$([a-zA-Z0-9_\.\-]+))|([a-zA-Z_][a-zA-Z0-9_\.\-]*)|(\()|(\))|(?:\'((?:\\'|[^\'])*)\')|([\+\-]?\d+(?:\.\d*)?)|(\,|(?:\r|\n)+)|($)|(#.*?(?:\n|\r)+)",
+        //private static readonly Regex _regex = new Regex(@"(\s+)|(true|false|null)|(while|if)|(?:\$([a-zA-Z0-9_\.\-]+))|([a-zA-Z_][a-zA-Z0-9_\.\-]*)|(\()|(\))|(?:\'((?:\\'|[^\'])*)\')|([\+\-]?\d+(?:\.\d*)?)|(\,|(?:\r|\n)+)|($)|(#.*?(?:\n|\r)+)",
+        //    RegexOptions.None);
+        private static readonly Regex _regex = new Regex(@"(\s+)|(true|false|null)|(while|if)|(?:\$([a-zA-Z0-9_\.\-]+))|([a-zA-Z_][a-zA-Z0-9_\.\-]*)|(\()|(\))|(?:\'((?:\\'|[^\'])*)\')|([\+\-]?\d+(?:\.\d*)?)|(,)|($)|(#.*?(?:\n|\r)+)",
             RegexOptions.None);
 
 
@@ -244,7 +247,7 @@ namespace Ccf.Ck.Libs.ActionQuery
                                                     runner.Add(new Instruction(Instructions.Jump, -1));
                                                     // Jump here if condition is not met
                                                     runner.Update(entry.Op1Address, runner.Address);
-                                                    AddArg(opstack, runner);
+                                                    //AddArg(opstack, runner);
                                                 } else if (entry.Value == "while") {
                                                     return runner.Complete(ReportError("while has more than two arguments at {0}", match,query));
                                                 } else {
@@ -328,7 +331,11 @@ namespace Ccf.Ck.Libs.ActionQuery
                 nextTerm:
                 match = match.NextMatch();
             } // next term
-            return runner.Complete("Parsing the query failed.");
+            var _serr = "";
+            if (pos > query.Length) {
+                _serr = " Unparsed:[" + query.Substring(pos) + "]";
+            }
+            return runner.Complete("Parsing the query failed at pos:" + pos + _serr );
         }
     }
 }
