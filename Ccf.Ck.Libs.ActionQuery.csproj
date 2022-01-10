@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard20</TargetFramework>
     <Version>1.1.2</Version>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
   <!-- Nuget specific tags -->
