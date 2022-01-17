@@ -34,12 +34,13 @@ namespace Ccf.Ck.Libs.ActionQuery
             end = 11,
             // Virtual tokens ===
             comment = 12,
+            
             compound = 101
         
         }
         //private static readonly Regex _regex = new Regex(@"(\s+)|(true|false|null)|(while|if)|(?:\$([a-zA-Z0-9_\.\-]+))|([a-zA-Z_][a-zA-Z0-9_\.\-]*)|(\()|(\))|(?:\'((?:\\'|[^\'])*)\')|([\+\-]?\d+(?:\.\d*)?)|(\,|(?:\r|\n)+)|($)|(#.*?(?:\n|\r)+)",
         //    RegexOptions.None);
-        private static readonly Regex _regex = new Regex(@"(\s+)|(true|false|null)|(while|if)|(?:\$([a-zA-Z0-9_\.\-]+))|([a-zA-Z_][a-zA-Z0-9_\.\-]*)|(\()|(\))|(?:\'((?:\\'|[^\'])*)\')|([\+\-]?\d+(?:\.\d*)?)|(,)|($)|(#.*?(?:\n|\r)+)",
+        private static readonly Regex _regex = new Regex(@"(\s+)|(true|false|null)|(while|if|halt)|(?:\$([a-zA-Z0-9_\.\-]+))|([a-zA-Z_][a-zA-Z0-9_\.\-]*)|(\()|(\))|(?:\'((?:\\'|[^\'])*)\')|([\+\-]?\d+(?:\.\d*)?)|(,)|($)|(#.*?(?:\n|\r)+)",
             RegexOptions.None);
 
 
@@ -126,7 +127,11 @@ namespace Ccf.Ck.Libs.ActionQuery
                                     if (!undecided.IsEmpty) {
                                         return runner.Complete(ReportError("Syntax error at {0}.", match, query));
                                     }
-                                    undecided = new OpEntry(curval, Terms.keyword, match.Index);
+                                    if (curval == "halt") {
+                                        runner.Add(new Instruction(Instructions.Halt)); 
+                                    } else {
+                                        undecided = new OpEntry(curval, Terms.keyword, match.Index);
+                                    }
                                 goto nextTerm;
                                 case Terms.varidentifier:
                                     if (!undecided.IsEmpty) {

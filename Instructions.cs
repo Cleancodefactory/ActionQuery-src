@@ -20,8 +20,12 @@ namespace Ccf.Ck.Libs.ActionQuery {
         GetVar = 11, // $varname - acquires variable by varname from the host and puts its value on the stack
         PushVar = 11,
         SetVar = 12, // $varname(expression) - sets the variable varname in the host
-        PullVar = 12
+        PullVar = 12,
         #endregion 1.1
+
+        #region 1.2
+        Halt = 13
+        #endregion 1.2
 
     }
 }

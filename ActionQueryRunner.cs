@@ -201,6 +201,12 @@ namespace Ccf.Ck.Libs.ActionQuery
                         case Instructions.Dump:
                             pc++;
                             continue;
+                        case Instructions.Halt:
+                            if (_datastack.Count == 0) {
+                                return null;
+                            } else {
+                                return _datastack.ToArray();
+                            }
                         default:
                             throw new ActionQueryException<ResolverValue>("Unsupported instruction.", instr, _datastack.ToArray(),pc);
                     }
