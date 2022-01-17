@@ -129,6 +129,7 @@ namespace Ccf.Ck.Libs.ActionQuery
                                     }
                                     if (curval == "halt") {
                                         runner.Add(new Instruction(Instructions.Halt)); 
+                                        AddArg(opstack, runner);
                                     } else {
                                         undecided = new OpEntry(curval, Terms.keyword, match.Index);
                                     }
