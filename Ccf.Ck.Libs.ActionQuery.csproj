@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard20</TargetFramework>
-    <Version>1.2.0</Version>
+    <Version>1.2.1</Version>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
@@ -35,6 +35,7 @@
 	    - Version 1.1.0: Added support for comments and dedicated variable access syntax.
       - Version 1.1.2: Parser bug fix (if arguments were calculated with 1+).
       - Version 1.2.0: Added instruction and keyword halt.
+	  - Version 1.2.1: Fixed impossible comment at the end of a script.
     </PackageReleaseNotes>
     <!-- Description and Release notes -->
   </PropertyGroup>
