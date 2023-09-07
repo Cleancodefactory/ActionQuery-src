@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard20</TargetFramework>
-    <Version>1.2.1</Version>
+    <Version>1.2.2</Version>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
@@ -29,14 +29,15 @@
     <RepositoryUrl>https://github.com/Cleancodefactory/ActionQuery-src</RepositoryUrl>
     <PackageTags>script language programmable query plugins configuraions</PackageTags>
     <PackageReleaseNotes>
-      Simple library enabling simple scripts to command host objects in your code. The scripts are simple programs calling your methods as if they are instructions.
-      - Version 1.0.3: First public version (bugfixing)
-      - Version 1.0.4: Correction of the nuget description (no code has been changed)
-	    - Version 1.1.0: Added support for comments and dedicated variable access syntax.
-      - Version 1.1.2: Parser bug fix (if arguments were calculated with 1+).
-      - Version 1.2.0: Added instruction and keyword halt.
-	  - Version 1.2.1: Fixed impossible comment at the end of a script.
-    </PackageReleaseNotes>
+		Simple library enabling simple scripts to command host objects in your code. The scripts are simple programs calling your methods as if they are instructions.
+		- Version 1.0.3: First public version (bugfixing)
+		- Version 1.0.4: Correction of the nuget description (no code has been changed)
+		- Version 1.1.0: Added support for comments and dedicated variable access syntax.
+		- Version 1.1.2: Parser bug fix (if arguments were calculated with 1+).
+		- Version 1.2.0: Added instruction and keyword halt.
+		- Version 1.2.1: Fixed impossible comment at the end of a script.
+		- Version 1.2.2: Throw ThreadInterrupted exception raw (e.g. not packed as ActionQueryException)
+	</PackageReleaseNotes>
     <!-- Description and Release notes -->
   </PropertyGroup>
 
